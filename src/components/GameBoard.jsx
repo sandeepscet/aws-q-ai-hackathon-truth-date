@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { toCanvas } from 'html-to-image';
+
 import Card from './Card'
 import PlayerSetup from './PlayerSetup'
 import CategorySelection from './CategorySelection'
@@ -6,6 +8,8 @@ import useLocalStorage from '../hooks/useLocalStorage'
 import { categories } from '../data/categories'
 
 const GameBoard = () => {
+  const componentRef = useRef(null);
+  const [isSharing, setIsSharing] = useState(false);
   const [gameStage, setGameStage] = useLocalStorage('gameStage', 'setup') // 'setup' | 'category' | 'playing'
   const [selectedCategory, setSelectedCategory] = useLocalStorage('selectedCategory', null)
   const [players, setPlayers] = useLocalStorage('players', [])
@@ -67,6 +71,50 @@ const GameBoard = () => {
     setAnswerPhase(false)
   }
 
+  const handleShare = async () => {
+  try {
+    setIsSharing(true);
+
+    // Capture the screenshot from the referenced component
+    const canvas = await toCanvas(componentRef.current);
+    const dataUrl = canvas.toDataURL('image/png');
+
+    // Convert base64 to Blob
+    const blob = await (await fetch(dataUrl)).blob();
+
+    // Create a file from the blob
+    const file = new File([blob], 'truth-or-dare-game.png', { type: 'image/png' });
+
+    // Check if Web Share API is supported by the browser
+    if (navigator.share) {
+      await navigator.share({
+        title: 'Truth or Dare Game',
+        text: 'Check out my Truth or Dare game!',
+        files: [file], // Sharing the image file
+      });
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      const shareData = {
+        title: 'Truth or Dare Game',
+        text: 'Check out my Truth or Dare game!',
+      };
+
+      // If Web Share API is not available, attempt clipboard text copy
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(shareData.text);
+        alert('Game link copied to clipboard!');
+      } else {
+        alert('Sorry, sharing is not supported on this browser.');
+      }
+    }
+  } catch (error) {
+    console.error('Error sharing:', error);
+    alert('There was an issue while sharing the screenshot.');
+  } finally {
+    setIsSharing(false); // Reset the sharing state
+  }
+};
+
   const resetGame = () => {
     setPlayers([])
     setCurrentPlayerIndex(0)
@@ -100,7 +148,7 @@ const GameBoard = () => {
 
   // Step 4: Game Play
   return (
-    <div className="max-w-md mx-auto space-y-4">
+    <div className="max-w-md mx-auto space-y-4" >
       <Card className="text-center p-6">
         <div className="mb-4">
           <span className={`inline-block px-4 py-2 rounded-full text-white ${getCurrentCategory()?.color}`}>
@@ -130,7 +178,7 @@ const GameBoard = () => {
           </div>
         ) : (
           // Question and Answer phase
-          <div className="space-y-4 mb-6">
+          <div className="space-y-4 mb-6" >
             <div className="bg-gray-100 p-4 rounded-lg">
               <p className="text-lg font-medium">
                 {currentQuestion?.type.toUpperCase()}: {currentQuestion?.text}
@@ -153,7 +201,7 @@ const GameBoard = () => {
           </div>
         )}
 
-        <div className="border-t pt-4">
+        <div className="border-t pt-4"  ref={componentRef}>
           <h3 className="text-lg font-bold mb-3">Players</h3>
           <div className="space-y-2">
             {players.map((player, index) => (
@@ -179,12 +227,20 @@ const GameBoard = () => {
         </div>
       </Card>
 
-      <button
-        onClick={resetGame}
-        className="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
-      >
-        Reset Game
-      </button>
+      <div className="flex gap-4 justify-center mt-4" >
+          <button
+            onClick={handleShare}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Share Game
+          </button>
+        <button
+          onClick={resetGame}
+          className="w-full bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+        >
+          Reset Game
+        </button>
+      </div>
     </div>
   )
 }

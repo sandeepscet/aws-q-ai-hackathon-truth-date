@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --safe-area-top: env(safe-area-inset-top);
+  --safe-area-bottom: env(safe-area-inset-bottom);
+}
+
+body {
+  @apply bg-gray-50;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mobile app-like container */
+.app-container {
+  @apply mx-auto min-h-screen max-w-lg bg-white;
+  padding-top: var(--safe-area-top);
+  padding-bottom: var(--safe-area-bottom);
+}
+
+/* Mobile-first card design */
+.game-card {
+  @apply rounded-2xl shadow-lg bg-white overflow-hidden;
+}
+
+/* Native-like buttons */
+.btn {
+  @apply rounded-full font-medium text-center transition-all active:scale-95;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-primary {
+  @apply bg-indigo-500 text-white py-4 px-6 shadow-md active:bg-indigo-600;
+}
+
+.btn-secondary {
+  @apply bg-purple-500 text-white py-4 px-6 shadow-md active:bg-purple-600;
+}
+
+/* Native-like inputs */
+.input {
+  @apply w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-0 transition-colors;
+}
+
+/* Animation utilities */
+.animate-in {
+  @apply transition-all duration-300 ease-out;
+}
+
+.slide-in-bottom {
+  @apply translate-y-4 opacity-0;
+}
+
+.slide-in-bottom.active {
+  @apply translate-y-0 opacity-100;
+}

@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-truthordare-dev-abecf-authRole",
+      "UnauthRoleArn": "arn:aws:iam::671142409195:role/amplify-truthordare-dev-abecf-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::671142409195:role/amplify-truthordare-dev-abecf-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-truthordare-dev-abecf-deployment",
+      "UnauthRoleName": "amplify-truthordare-dev-abecf-unauthRole",
+      "StackName": "amplify-truthordare-dev-abecf",
+      "StackId": "arn:aws:cloudformation:us-east-1:671142409195:stack/amplify-truthordare-dev-abecf/17254890-c511-11ef-9a98-1275215ae02f",
+      "AmplifyAppId": "doo7bmargaewz"
+    },
+    "categories": {
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "doo7bmargaewz",
+          "type": "manual"
+        }
+      }
+    }
+  }
+}

@@ -17,6 +17,15 @@
           "appId": "doo7bmargaewz",
           "type": "manual"
         }
+      },
+      "function": {
+        "truthordareapi": {
+          "deploymentBucketName": "amplify-truthordare-dev-abecf-deployment",
+          "s3Key": "amplify-builds/truthordareapi-3142386f35764b484858-build.zip"
+        }
+      },
+      "api": {
+        "truthordareapi": {}
       }
     }
   }

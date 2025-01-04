@@ -6,9 +6,12 @@ import PlayerSetup from './PlayerSetup'
 import CategorySelection from './CategorySelection'
 import useLocalStorage from '../hooks/useLocalStorage'
 import { categories } from '../data/categories'
+import { generateQuestion } from '../utils/bedrock';
 
 const GameBoard = () => {
   const componentRef = useRef(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [isSharing, setIsSharing] = useState(false);
   const [gameStage, setGameStage] = useLocalStorage('gameStage', 'setup') // 'setup' | 'category' | 'playing'
   const [selectedCategory, setSelectedCategory] = useLocalStorage('selectedCategory', null)
@@ -16,6 +19,7 @@ const GameBoard = () => {
   const [currentPlayerIndex, setCurrentPlayerIndex] = useLocalStorage('currentPlayerIndex', 0)
   const [currentQuestion, setCurrentQuestion] = useState(null)
   const [answerPhase, setAnswerPhase] = useState(false) // false = choosing truth/dare, true = answering
+
 
   const handlePlayersSubmit = (playerNames) => {
     const newPlayers = playerNames.map(name => ({
@@ -32,16 +36,31 @@ const GameBoard = () => {
     setGameStage('playing')
   }
 
-  const handleChoice = (choice) => {
-    // Here you would normally fetch a question based on the choice and category
-    // For now, we'll use placeholder questions
-    const question = choice === 'truth'
-      ? "What's your biggest fear?"
-      : "Dance like nobody's watching for 30 seconds"
+  const handleChoice = async (choice) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const currentCategory = getCurrentCategory();
+      const question = await generateQuestion(choice, currentCategory.name);
 
-    setCurrentQuestion({ type: choice, text: question })
-    setAnswerPhase(true)
-  }
+      if (question) {
+        setCurrentQuestion({ type: choice, text: question });
+        setAnswerPhase(true);
+      } else {
+        throw new Error('Failed to generate question');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      setError('Failed to generate question. Please try again.');
+      // Use fallback question
+      const fallbackQuestion = choice === 'truth'
+        ? "What's your biggest fear?"
+        : "Dance like nobody's watching for 30 seconds";
+      setCurrentQuestion({ type: choice, text: fallbackQuestion });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleAnswer = (completed) => {
     // Update player's score and history
@@ -161,22 +180,27 @@ const GameBoard = () => {
         </h2>
 
         {!answerPhase ? (
-          // Truth or Dare selection
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <button
-              onClick={() => handleChoice('truth')}
-              className="bg-primary text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition"
-            >
-              Truth
-            </button>
-            <button
-              onClick={() => handleChoice('dare')}
-              className="bg-secondary text-white px-6 py-3 rounded-lg hover:bg-opacity-90 transition"
-            >
-              Dare
-            </button>
-          </div>
-        ) : (
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <button
+                onClick={() => handleChoice('truth')}
+                disabled={isLoading}
+                className={`bg-primary text-white px-6 py-3 rounded-lg transition ${
+                  isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-opacity-90'
+                }`}
+              >
+                {isLoading ? 'Generating...' : 'Truth'}
+              </button>
+              <button
+                onClick={() => handleChoice('dare')}
+                disabled={isLoading}
+                className={`bg-secondary text-white px-6 py-3 rounded-lg transition ${
+                  isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-opacity-90'
+                }`}
+              >
+                {isLoading ? 'Generating...' : 'Dare'}
+              </button>
+            </div>
+          ) : (
           // Question and Answer phase
           <div className="space-y-4 mb-6" >
             <div className="bg-gray-100 p-4 rounded-lg">

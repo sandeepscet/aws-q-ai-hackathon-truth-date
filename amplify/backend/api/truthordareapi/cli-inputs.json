@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "paths": {
+    "/generate-question": {
+      "name": "/generate-question",
+      "lambdaFunction": "truthordareapi",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

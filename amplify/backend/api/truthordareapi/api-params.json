@@ -1,0 +1,50 @@
+{
+  "paths": [
+    {
+      "name": "/generate-question",
+      "lambdaFunction": "truthordareapi",
+      "privacy": {
+        "open": true
+      },
+      "policyResourceName": "apiPolicy",
+      "cors": {
+        "origin": "*",
+        "headers": [
+          "Content-Type",
+          "X-Amz-Date",
+          "Authorization",
+          "X-Api-Key",
+          "X-Amz-Security-Token"
+        ],
+        "methods": [
+          "OPTIONS",
+          "POST"
+        ],
+        "allowCredentials": false
+      }
+    }
+  ],
+  "resourceName": "truthordareapi",
+  "apiName": "truthordareapi",
+  "functionArns": [
+    {
+      "lambdaFunction": "truthordareapi"
+    }
+  ],
+  "privacy": {
+    "auth": 0,
+    "unauth": 0,
+    "authRoleName": "amplify-truthordareapi-dev-123456-authRole",
+    "unAuthRoleName": "amplify-truthordareapi-dev-123456-unauthRole"
+  },
+  "dependsOn": [
+    {
+      "category": "function",
+      "resourceName": "truthordareapi",
+      "attributes": [
+        "Name",
+        "Arn"
+      ]
+    }
+  ]
+}
